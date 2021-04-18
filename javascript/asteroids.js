@@ -26,10 +26,18 @@ class Astroids{
             this.velocityY = -1 * this.velocityY
         }
         this.draw();
+    }
 
-        if((this.x + this.radius) < 0){
-
+    crashWith(mouseX, mouseY) {
+        let dx = mouseX- this.x;
+        let dy = mouseY- this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if(distance < this.radius + 30){
+            
+            setTimeout(() => {
+                lives -= 1;
+            }, 2000);
         }
-
     }
 }
