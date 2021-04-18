@@ -11,16 +11,58 @@ startButton.addEventListener('click', function(){
     intro.style.display = 'none';
     canvas.style.display = 'block'; 
     animate();
-    canvasCursor.style.cursor = 'none';    
+    canvasCursor.style.cursor = 'none';
+    mainthemeSound();
     
 })
 
 let frames = 0;
-let astroidsArr = [];
+let astroidsArr = []; 
+let beamArr = [];
 const image = new Image(30, 30);
 image.src = 'img/download.png';
 let lives = 300;
 console.log({lives})
+let collision = false;
+let explosionSound = null;
+let mainSound = null;
+
+// explosion sound 
+
+function mainthemeSound(){
+    let mainSound = new Audio()
+    mainSound.src = './sounds/main.mp3'
+    mainSound.play();
+
+}
+
+
+function explosion(){
+   
+    let explosionSound = new Audio()
+    explosionSound.src = './sounds/explosion.mp3'
+    explosionSound.play();
+
+}
+
+
+// function that sets back the collision back to false
+
+function detectCollisions(){
+
+    astroidsArr.forEach((element, index, arr) => { 
+        if(element.collision === true){
+            astroidsArr.splice(index, 1);
+        }        
+    });
+}
+
+function countingLives(){
+    if(collision === true){
+        lives -= 1;
+        collision = false;        
+    }
+}
 
 // function to draw the image on the canvas
 
@@ -67,7 +109,8 @@ function generateAsteroids(){
     let y = randomIntFromInterval(radius, (canvas.height - radius))
     let velocityX = randomIntFromInterval(1,6)
     let velocityY = randomIntFromInterval(-2,2)    
-    astroidsArr.push(new Astroids(x, y, radius, velocityX, velocityY))    
+    astroidsArr.push(new Astroids(x, y, radius, velocityX, velocityY))
+
 }
 
 // function to clear the canvas which is called within the animate function
@@ -85,6 +128,15 @@ window.addEventListener('mousemove', function(event){
         mouseY = getMousePos(canvas, event).y;
     }
 })
+
+window.addEventListener('click', function(event){
+    
+    beamArr.push(new Beam(mouseX, mouseY, 10));
+
+} )
+
+
+
 
 // circle below the spaceship image to use for the object collision detection
 
@@ -107,6 +159,17 @@ function clearObject(){
 
 }
 
+// this function is to remove beam objects from the array when they leave the canvas
+
+function clearBeams(){
+
+    beamArr.forEach((element, index, arr) => { 
+        if(element.x > canvas.width){
+            astroidsArr.splice(index, 1);
+        }        
+    });
+
+}
 
 // the animate function that draws everything on the canvas
 
@@ -115,7 +178,7 @@ function animate(){
     clearArea();
     frames += 1;
 
-    const rangeFrames = randomIntFromInterval(120, 300); 
+    const rangeFrames = randomIntFromInterval(10, 30); 
     if(frames % rangeFrames === 0){
         generateAsteroids();
     }
@@ -125,10 +188,14 @@ function animate(){
         astroidsArr[i].crashWith(mouseX, mouseY);
     }
 
+    for(let i=0; i < beamArr.length; i++){
+        beamArr[i].draw();
+        beamArr[i].crashWith();
+    }
 
-
+    detectCollisions()
+    countingLives()
     spaceShip(mouseX, mouseY);
-    
     imageLoad();
 }
  

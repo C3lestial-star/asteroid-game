@@ -6,6 +6,7 @@ class Astroids{
         this.radius = radius;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
+        this.collision = false;
     }
 
     draw(){
@@ -35,9 +36,9 @@ class Astroids{
         
         if(distance < this.radius + 30){
             
-            setTimeout(() => {
-                lives -= 1;
-            }, 2000);
+            this.collision = true;
+            collision = true; 
+            explosion()
         }
     }
 }
