@@ -3,6 +3,7 @@ html{
     font-size: 10px;
     background-image: url(../img/17515.jpg);
     background-size: cover;
+    font-family: 'Zen Dots', cursive;
 }
 
 body{
@@ -26,11 +27,51 @@ body{
     bottom: 0;
     border-radius: 1rem;
     border: 1px solid white;
+    animation: fade-in 0.5s ease-in;
 
 }
 
 #intro {
 
-    color: white;
+    color: black;
     
+}
+
+button{
+
+    width: 10rem;
+    height: 5rem;
+    background-color:#FF0005;
+    border: none;
+    border-radius: none;
+    border-radius: 30px;
+    margin: 5rem;
+}
+
+section{
+
+    display: inline-block;
+    background-color: #f2aa4c;;
+    text-align: center;
+    border-radius: 3px;
+    padding: 2rem;
+    margin-top: 4rem;
+
+
+}
+
+.wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+}
+
+
+@keyframes fade-in {
+    0%{ opacity: 0%;
+    }
+    100%{ opacity: 100%;
+    }
 }

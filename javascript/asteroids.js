@@ -38,7 +38,7 @@ class Astroids{
             
             this.collision = true;
             collision = true; 
-            explosion()
+            explosion()            
         }
     }
 }

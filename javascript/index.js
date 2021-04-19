@@ -10,7 +10,10 @@ startButton.addEventListener('click', function(){
     canvas.height = window.innerHeight * 0.8;
     intro.style.display = 'none';
     canvas.style.display = 'block'; 
-    animate();
+    setTimeout(() => {
+        animate();
+    }, 1000);
+
     canvasCursor.style.cursor = 'none';
     mainthemeSound();
     
@@ -21,16 +24,29 @@ let astroidsArr = [];
 let beamArr = [];
 const image = new Image(30, 30);
 image.src = 'img/download.png';
-let lives = 300;
+let lives = 5;
 console.log({lives})
 let collision = false;
-let explosionSound = null;
-let mainSound = null;
+const explosionSound = null;
+const mainSound = null;
+let stopId = null;
+
+
+function startAnimation(){
+
+    stopId = requestAnimationFrame(animate)
+}
+
+
+function stopAnimation(){
+
+    cancelAnimationFrame(stopId);
+}
 
 // explosion sound 
 
 function mainthemeSound(){
-    let mainSound = new Audio()
+    const mainSound = new Audio()
     mainSound.src = './sounds/main.mp3'
     mainSound.play();
 
@@ -39,7 +55,7 @@ function mainthemeSound(){
 
 function explosion(){
    
-    let explosionSound = new Audio()
+    const explosionSound = new Audio()
     explosionSound.src = './sounds/explosion.mp3'
     explosionSound.play();
 
@@ -53,16 +69,36 @@ function detectCollisions(){
     astroidsArr.forEach((element, index, arr) => { 
         if(element.collision === true){
             astroidsArr.splice(index, 1);
+            
         }        
     });
 }
 
+// function that counts lives
+
 function countingLives(){
     if(collision === true){
         lives -= 1;
-        collision = false;        
+        collision = false;
     }
 }
+
+// function that stops the game when no lives are left
+
+function noLivesLeft(){
+
+    if(lives === 0){
+        stopAnimation();
+
+        setTimeout(() => {
+            clearArea();
+        }, 1000);
+
+    }
+}
+
+
+
 
 // function to draw the image on the canvas
 
@@ -74,7 +110,6 @@ function imageLoad() {
 // eventlistener that resizes the canvas based on the size of the window
 
 window.addEventListener('resize', function(){
-    console.log('works')
     if(canvas){
         canvas.width = window.innerWidth * 0.8;
         canvas.height = window.innerHeight * 0.8;
@@ -124,15 +159,15 @@ function clearArea(){
 window.addEventListener('mousemove', function(event){
 
     if(canvas){
-        mouseX = getMousePos(canvas, event).x;
-        mouseY = getMousePos(canvas, event).y;
+        mouseX = (getMousePos(canvas, event).x) > canvas.width ? canvas.width : (getMousePos(canvas, event).x) < 0 ? 0 : getMousePos(canvas, event).x;
+        mouseY = (getMousePos(canvas, event).y) > canvas.height? canvas.height : (getMousePos(canvas, event).y) < 0 ? 0 : getMousePos(canvas, event).y;
     }
 })
 
 window.addEventListener('click', function(event){
-    
-    beamArr.push(new Beam(mouseX, mouseY, 10));
-
+    if(canvas){
+        beamArr.push(new Beam(mouseX, mouseY, 10));
+    }
 } )
 
 
@@ -141,6 +176,7 @@ window.addEventListener('click', function(event){
 // circle below the spaceship image to use for the object collision detection
 
 function spaceShip(x, y){
+    
     ctx.beginPath(); 
     ctx.arc(x,y, 30, 0, Math.PI * 2, false);
     ctx.strokeStyle = 'white';
@@ -174,8 +210,8 @@ function clearBeams(){
 // the animate function that draws everything on the canvas
 
 function animate(){
-    requestAnimationFrame(animate);
     clearArea();
+    startAnimation();
     frames += 1;
 
     const rangeFrames = randomIntFromInterval(10, 30); 
@@ -197,54 +233,12 @@ function animate(){
     countingLives()
     spaceShip(mouseX, mouseY);
     imageLoad();
+    noLivesLeft();
+
 }
  
 let mouseX = null;
 let mouseY = null;
 
 
-
-
-
-
-// function animate() {
-//     requestAnimationFrame(animate);
-//     let radius = randomIntFromInterval(20, 35)
-//     let x = canvas.width - radius
-//     let y = randomIntFromInterval(0, canvas.height)
-    // ctx.beginPath();
-    // ctx.strokeStyle = 'blue'
-//     ctx.arc(x,y, radius, 0, Math.PI * 2, false)
-//     ctx.stroke();
-
-//     x= x +10; 
-// }
-
-
-
-
-
-// window.addEventListener('mousemove', function(event){
-//     clearArea();
-//     x = getMousePos(canvas, event).x;
-//     y = getMousePos(canvas, event).y;
-
-    
-//     draw1(x, y);
-
-
-    
-// })
-
-
-// function draw1(x, y){
-
-//     ctx.beginPath();
-//     ctx.lineWidth = 10;
-//     ctx.lineCap = 'round';
-//     ctx.strokeStyle = 'black';
-//     ctx.lineTo(x, y)
-//     ctx.stroke();
-
-// }
 
