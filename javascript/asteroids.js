@@ -21,7 +21,7 @@ class Astroids{
             ctx.drawImage(asteroid, this.x - 35, this.y-40, this.radius*3.5, this.radius*3.5);
         }
         else{
-            ctx.drawImage(asteroid, this.x - 45, this.y-45, this.radius*3.5, this.radius*3.5);
+            ctx.drawImage(asteroid, this.x -55, this.y-55, this.radius*3.5, this.radius*3.5);
         }
    
         this.x -= this.velocityX
