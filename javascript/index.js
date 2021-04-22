@@ -3,6 +3,8 @@ const intro = document.getElementById('intro');
 let ctx = null;
 const startButton = document.getElementById('start');
 const canvasCursor = document.getElementById('no-cursor');
+const restartBtn = document.querySelector('.btnTwo');
+const pauseBtn = document.querySelector('.btnOne');
 startButton.addEventListener('click', function(){
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
@@ -10,48 +12,175 @@ startButton.addEventListener('click', function(){
     canvas.height = window.innerHeight * 0.8;
     intro.style.display = 'none';
     canvas.style.display = 'block'; 
+    restartBtn.style.display = 'inline';
+    pauseBtn.style.display = 'inline';
+
     setTimeout(() => {
         animate();
     }, 1000);
 
     canvasCursor.style.cursor = 'none';
     mainthemeSound();
-    
+    InitialStars()
+    gameStatus = true;
+
 })
+
 
 let frames = 0;
 let astroidsArr = []; 
 let beamArr = [];
 const image = new Image(30, 30);
-image.src = 'img/download.png';
+image.src = 'img/white.png';
+const beamImage = new Image();
+beamImage.src = 'img/beams(5).png';
+const asteroid = new Image();
+asteroid.src = 'img/asteroid.png';
 let lives = 5;
-console.log({lives})
 let collision = false;
 const explosionSound = null;
 const mainSound = null;
 let stopId = null;
+let minInterval = 30;
+let maxInterval = 50;
+let score = 0;
+let starsArr = [];
+let gameStatus = null;
 
+
+
+
+pauseBtn.addEventListener('click', function(e){
+
+    if(pauseBtn.innerHTML === 'Pause'){
+        pauseBtn.innerHTML = 'Start';
+        stopAnimation();
+        console.log('Pause');
+    }
+    else if(pauseBtn.innerHTML === 'Start'){
+        pauseBtn.innerHTML = 'Pause';
+        startAnimation();
+        console.log('Start');
+    }    
+})
+
+
+
+
+// game over function 
+
+function gameOver(){
+
+    ctx.font = "100px Arial";
+    ctx.fillStyle = "white";
+    ctx.textStyle = 'center';    
+    ctx.fillText("Game Over", (window.innerWidth /4 ), (window.innerHeight /2.5));
+    ctx.fillText("You Lose!", (window.innerWidth /3.7 ), (window.innerHeight /2));
+
+    gameStatus = false;
+    window.addEventListener('resize', function(){
+        ctx.font = "100px Arial";
+        ctx.fillStyle = "white";
+        ctx.textStyle = 'center';
+        ctx.fillText("Game Over", (window.innerWidth /4 ), (window.innerHeight /2.5));
+        ctx.fillText("You Lose!", (window.innerWidth /3.7 ), (window.innerHeight /2));
+    })
+}
+
+
+function scoreLives(){
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.textStyle = 'center';    
+    ctx.fillText("Score: "+ score, 50, 50);
+
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.textStyle = 'center';    
+    ctx.fillText("Lives: "+ lives, 400, 50);
+
+    ctx.beginPath();
+    ctx.strokeStyle ='white';
+    ctx.lineWidth = 3;
+    ctx.rect(25,15, 600,50);
+    ctx.stroke();
+}
+
+
+// Winning function 
+
+function youWin(){
+
+    ctx.font = "100px Arial";
+    ctx.fillStyle = "white";
+    ctx.textStyle = 'center';    
+    ctx.fillText("You Won!", (window.innerWidth /4 ), (window.innerHeight /2.5));
+
+
+    window.addEventListener('resize', function(){
+        ctx.font = "100px Arial";
+        ctx.fillStyle = "white";
+        ctx.textStyle = 'center';
+        ctx.fillText("You Won!", (window.innerWidth /4 ), (window.innerHeight /2.5));
+    })
+}
+
+// increase difficulty
+
+function increasedifficulty(){
+
+    if(frames % 500 === 0){
+
+        if( minInterval === 0){
+            minInterval = 0;
+            maxInterval = 20;
+        }
+        else{ 
+            minInterval -= 3;
+            maxInterval -= 3;
+        }    
+    }
+}
+
+
+
+// start animation 
 
 function startAnimation(){
 
     stopId = requestAnimationFrame(animate)
 }
 
+// stop animation 
 
 function stopAnimation(){
 
     cancelAnimationFrame(stopId);
 }
 
-// explosion sound 
+// main sound 
 
 function mainthemeSound(){
     const mainSound = new Audio()
-    mainSound.src = './sounds/main.mp3'
+    mainSound.src = './sounds/space.mp3'
     mainSound.play();
+    mainSound.volume = 0.3;
 
 }
 
+// shooting sound
+
+function ShootingSound(){
+    const shootingSound = new Audio()
+    shootingSound.src = './sounds/Fire4.mp3'
+    shootingSound.play();
+    shootingSound.volume = 0.5;
+}
+
+
+
+
+// explosion sound
 
 function explosion(){
    
@@ -69,7 +198,6 @@ function detectCollisions(){
     astroidsArr.forEach((element, index, arr) => { 
         if(element.collision === true){
             astroidsArr.splice(index, 1);
-            
         }        
     });
 }
@@ -89,10 +217,13 @@ function noLivesLeft(){
 
     if(lives === 0){
         stopAnimation();
-
         setTimeout(() => {
             clearArea();
         }, 1000);
+        setTimeout(() => {
+            gameOver();
+        }, 1500);
+        
 
     }
 }
@@ -103,9 +234,20 @@ function noLivesLeft(){
 // function to draw the image on the canvas
 
 function imageLoad() {
-    //draw background image
+
     ctx.drawImage(image, mouseX-35, mouseY-35, 70, 70);
 }
+
+
+// function that loads beams from spaceship
+
+function beamloader() {
+
+    beamArr.forEach(element => {
+        ctx.drawImage(beamImage, element.x - 65, element.y - 45);
+    });    
+}
+
 
 // eventlistener that resizes the canvas based on the size of the window
 
@@ -148,6 +290,39 @@ function generateAsteroids(){
 
 }
 
+
+function InitialStars(){ 
+
+    
+    for (let index = 0; index < 100; index++) {
+        
+        let radius = randomIntFromInterval(1, 2)
+        let x = randomIntFromInterval(radius, (canvas.width - radius))
+        let y = randomIntFromInterval(radius, (canvas.height - radius))
+        let velocityX = randomIntFromInterval(0,3)
+        let velocityY = randomIntFromInterval(0,1)    
+        starsArr.push(new Stars(x, y, radius, velocityX, velocityY))
+        
+    }
+
+}
+
+
+
+// generate stars function
+
+function generateStars(){
+    
+    let radius = randomIntFromInterval(1, 3)
+    let x = canvas.width - radius
+    let y = randomIntFromInterval(radius, (canvas.height - radius))
+    let velocityX = randomIntFromInterval(0,3)
+    let velocityY = randomIntFromInterval(0,1)    
+    starsArr.push(new Stars(x, y, radius, velocityX, velocityY))
+
+}
+
+
 // function to clear the canvas which is called within the animate function
 
 function clearArea(){
@@ -165,10 +340,11 @@ window.addEventListener('mousemove', function(event){
 })
 
 window.addEventListener('click', function(event){
-    if(canvas){
+    if(canvas && gameStatus === true){
         beamArr.push(new Beam(mouseX, mouseY, 10));
+        ShootingSound()
     }
-} )
+})
 
 
 
@@ -179,7 +355,7 @@ function spaceShip(x, y){
     
     ctx.beginPath(); 
     ctx.arc(x,y, 30, 0, Math.PI * 2, false);
-    ctx.strokeStyle = 'white';
+    ctx.strokeStyle = 'black';
     ctx.stroke();
 }
 
@@ -194,6 +370,18 @@ function clearObject(){
     });
 
 }
+
+// this function is to remove stars objects from the array when they leave the canvas
+
+function clearStars(){
+
+    starsArr.forEach((element, index, arr) => { 
+        if(element.x < 0){
+            starsArr.splice(index, 1);
+        }        
+    });
+}
+
 
 // this function is to remove beam objects from the array when they leave the canvas
 
@@ -214,10 +402,15 @@ function animate(){
     startAnimation();
     frames += 1;
 
-    const rangeFrames = randomIntFromInterval(10, 30); 
+    const rangeFrames = randomIntFromInterval(minInterval, maxInterval); 
     if(frames % rangeFrames === 0){
         generateAsteroids();
     }
+
+    if(frames % rangeFrames === 0){
+        generateStars();
+    }
+
     clearObject();
     for(let i=0; i < astroidsArr.length; i++){
         astroidsArr[i].update();
@@ -229,11 +422,21 @@ function animate(){
         beamArr[i].crashWith();
     }
 
+    clearStars();
+    for(let i=0; i < starsArr.length; i++){
+        starsArr[i].draw();
+    }
+
+
     detectCollisions()
     countingLives()
     spaceShip(mouseX, mouseY);
     imageLoad();
+    beamloader()
     noLivesLeft();
+    increasedifficulty()
+
+    scoreLives();
 
 }
  

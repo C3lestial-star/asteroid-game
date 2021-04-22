@@ -13,10 +13,17 @@ class Astroids{
 
         ctx.beginPath();        
         ctx.arc(this.x,this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.strokeStyle ='blue';        
-        ctx.lineWidth = 3;
+        ctx.strokeStyle ='black';        
+        ctx.lineWidth = 1;
         ctx.stroke(); 
 
+        if(this.radius < 25 ){ 
+            ctx.drawImage(asteroid, this.x - 35, this.y-40, this.radius*3.5, this.radius*3.5);
+        }
+        else{
+            ctx.drawImage(asteroid, this.x - 45, this.y-45, this.radius*3.5, this.radius*3.5);
+        }
+   
         this.x -= this.velocityX
         this.y += this.velocityY
         

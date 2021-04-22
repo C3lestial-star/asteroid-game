@@ -15,7 +15,7 @@ body{
 
 #canvas {
     display: none;
-    background-color: white;
+    background-color: black;
     box-sizing: border-box;
     padding: 0;
     margin: auto;
@@ -37,7 +37,7 @@ body{
     
 }
 
-button{
+section > button{
 
     width: 10rem;
     height: 5rem;
@@ -74,4 +74,16 @@ section{
     }
     100%{ opacity: 100%;
     }
+}
+
+.buttons{
+    text-align: center;
+}
+
+.btnOne,
+.btnTwo {
+    display: none;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 100%;    
 }

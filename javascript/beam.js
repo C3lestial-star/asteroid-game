@@ -11,10 +11,11 @@ class Beam{
 
         ctx.beginPath();
         ctx.arc(this.x,this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.strokeStyle ='red';
+        ctx.strokeStyle ='black';
         ctx.fillStyle = "#FF0000";
         ctx.lineWidth = 3;
         ctx.stroke();
+
         this.x += this.velocityX;
     }
 
@@ -29,6 +30,7 @@ class Beam{
             if(distance < this.radius + element.radius){
                 
                 element.collision = true;
+                score += 50;
                 explosion()
             }            
         });        
