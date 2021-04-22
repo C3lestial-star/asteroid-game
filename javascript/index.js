@@ -69,6 +69,27 @@ pauseBtn.addEventListener('click', function(e){
 
 // game over function 
 
+function WinGame(){
+
+    ctx.font = "100px Arial";
+    ctx.fillStyle = "white";
+    ctx.textStyle = 'center';    
+    ctx.fillText("Well done", (window.innerWidth /3.9 ), (window.innerHeight /2.5));
+    ctx.fillText("You Win!", (window.innerWidth /3.7 ), (window.innerHeight /2));
+
+    gameStatus = false;
+    window.addEventListener('resize', function(){
+        ctx.font = "100px Arial";
+        ctx.fillStyle = "white";
+        ctx.textStyle = 'center';
+        ctx.fillText("Well done Soldier!", (window.innerWidth /4 ), (window.innerHeight /2.5));
+        ctx.fillText("You Win!", (window.innerWidth /3.7 ), (window.innerHeight /2));
+    })
+}
+
+
+// game over function 
+
 function gameOver(){
 
     ctx.font = "100px Arial";
@@ -86,6 +107,8 @@ function gameOver(){
         ctx.fillText("You Lose!", (window.innerWidth /3.7 ), (window.innerHeight /2));
     })
 }
+
+
 
 
 function scoreLives(){
@@ -106,24 +129,6 @@ function scoreLives(){
     ctx.stroke();
 }
 
-
-// Winning function 
-
-function youWin(){
-
-    ctx.font = "100px Arial";
-    ctx.fillStyle = "white";
-    ctx.textStyle = 'center';    
-    ctx.fillText("You Won!", (window.innerWidth /4 ), (window.innerHeight /2.5));
-
-
-    window.addEventListener('resize', function(){
-        ctx.font = "100px Arial";
-        ctx.fillStyle = "white";
-        ctx.textStyle = 'center';
-        ctx.fillText("You Won!", (window.innerWidth /4 ), (window.innerHeight /2.5));
-    })
-}
 
 // increase difficulty
 
@@ -164,6 +169,7 @@ function mainthemeSound(){
     const mainSound = new Audio()
     mainSound.src = './sounds/space.mp3'
     mainSound.play();
+    mainSound.loop = true;  
     mainSound.volume = 0.3;
 
 }
@@ -228,7 +234,20 @@ function noLivesLeft(){
     }
 }
 
+function winner(){
 
+    if(score === 10000){
+        stopAnimation();
+        setTimeout(() => {
+            clearArea();
+        }, 1000);
+        setTimeout(() => {
+            WinGame();
+        }, 1500);
+        
+
+    }
+}
 
 
 // function to draw the image on the canvas
@@ -435,7 +454,7 @@ function animate(){
     beamloader()
     noLivesLeft();
     increasedifficulty()
-
+    winner()
     scoreLives();
 
 }

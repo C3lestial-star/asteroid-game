@@ -86,4 +86,19 @@ section{
     width: 7rem;
     height: 7rem;
     border-radius: 100%;    
+    background-color: black;
+    color: white;
+    border-color: white;
+}
+.btnOne:hover{
+
+    background-color: white;
+    color: black;
+}
+
+
+.btnTwo:hover{
+
+    background-color: white;
+    color: black;
 }
