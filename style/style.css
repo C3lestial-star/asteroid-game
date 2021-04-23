@@ -37,16 +37,27 @@ body{
     
 }
 
-section > button{
+#start {
 
     width: 10rem;
     height: 5rem;
-    background-color:#FF0005;
+    background-color:black;
     border: none;
-    border-radius: none;
     border-radius: 30px;
     margin: 5rem;
+    font-size: 2rem;
+    color: white;
+
 }
+
+#start:hover{
+
+    background: green;
+    color: black;
+    
+}
+
+
 
 section{
 
@@ -70,9 +81,11 @@ section{
 
 
 @keyframes fade-in {
-    0%{ opacity: 0%;
+    0%{ 
+        opacity: 0%;
     }
-    100%{ opacity: 100%;
+    100%{ 
+        opacity: 100%;
     }
 }
 
@@ -80,8 +93,8 @@ section{
     text-align: center;
 }
 
-.btnOne,
-.btnTwo {
+
+.btn-primary {
     display: none;
     width: 7rem;
     height: 7rem;
@@ -90,14 +103,7 @@ section{
     color: white;
     border-color: white;
 }
-.btnOne:hover{
-
-    background-color: white;
-    color: black;
-}
-
-
-.btnTwo:hover{
+.btn-primary:hover{
 
     background-color: white;
     color: black;

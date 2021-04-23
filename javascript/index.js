@@ -30,12 +30,15 @@ startButton.addEventListener('click', function(){
 let frames = 0;
 let astroidsArr = []; 
 let beamArr = [];
+let starsArr = [];
+
 const image = new Image(30, 30);
 image.src = 'img/white.png';
 const beamImage = new Image();
 beamImage.src = 'img/beams(5).png';
 const asteroid = new Image();
 asteroid.src = 'img/asteroid.png';
+
 let lives = 5;
 let collision = false;
 const explosionSound = null;
@@ -44,24 +47,26 @@ let stopId = null;
 let minInterval = 30;
 let maxInterval = 50;
 let score = 0;
-let starsArr = [];
+
 let gameStatus = null;
 
 
-
+// function that enables the game to be paused
 
 pauseBtn.addEventListener('click', function(e){
 
-    if(pauseBtn.innerHTML === 'Pause'){
-        pauseBtn.innerHTML = 'Start';
-        stopAnimation();
-        console.log('Pause');
+    if(gameStatus){
+        if(pauseBtn.innerHTML === 'Pause'){
+            pauseBtn.innerHTML = 'Start';
+            stopAnimation();
+            console.log('Pause');
+        }
+        else if(pauseBtn.innerHTML === 'Start'){
+            pauseBtn.innerHTML = 'Pause';
+            startAnimation();
+            console.log('Start');
+        }
     }
-    else if(pauseBtn.innerHTML === 'Start'){
-        pauseBtn.innerHTML = 'Pause';
-        startAnimation();
-        console.log('Start');
-    }    
 })
 
 
@@ -109,7 +114,7 @@ function gameOver(){
 }
 
 
-
+// function that draws the score and number of lives on the canvas
 
 function scoreLives(){
     ctx.font = "30px Arial";
@@ -185,7 +190,6 @@ function ShootingSound(){
 
 
 
-
 // explosion sound
 
 function explosion(){
@@ -233,6 +237,8 @@ function noLivesLeft(){
 
     }
 }
+
+// function that executes when player wins
 
 function winner(){
 
@@ -290,6 +296,7 @@ function getMousePos(canvas, evt) {
     }
 }
 
+// funtion that generates random numbers between two intervals
 
 
 function randomIntFromInterval(min, max) { // min and max included 
@@ -309,18 +316,29 @@ function generateAsteroids(){
 
 }
 
+// function that uses the stars class to generate star and pushes it into an array
+
+function setStars(start){
+    const radius = randomIntFromInterval(1, 3)
+    const x = start ? randomIntFromInterval(radius, (canvas.width - radius)) : canvas.width - radius;
+    const y = randomIntFromInterval(radius, (canvas.height - radius))
+    const velocityX = randomIntFromInterval(0,3)
+    const velocityY = randomIntFromInterval(0,1)    
+    
+    starsArr.push(new Stars(x, y, radius, velocityX, velocityY))
+
+}
+
+
+
+// function that create the initial stars on the canvas
 
 function InitialStars(){ 
 
     
     for (let index = 0; index < 100; index++) {
         
-        let radius = randomIntFromInterval(1, 2)
-        let x = randomIntFromInterval(radius, (canvas.width - radius))
-        let y = randomIntFromInterval(radius, (canvas.height - radius))
-        let velocityX = randomIntFromInterval(0,3)
-        let velocityY = randomIntFromInterval(0,1)    
-        starsArr.push(new Stars(x, y, radius, velocityX, velocityY))
+        setStars(true)
         
     }
 
@@ -332,12 +350,7 @@ function InitialStars(){
 
 function generateStars(){
     
-    let radius = randomIntFromInterval(1, 3)
-    let x = canvas.width - radius
-    let y = randomIntFromInterval(radius, (canvas.height - radius))
-    let velocityX = randomIntFromInterval(0,3)
-    let velocityY = randomIntFromInterval(0,1)    
-    starsArr.push(new Stars(x, y, radius, velocityX, velocityY))
+    setStars(false)
 
 }
 
@@ -348,18 +361,43 @@ function clearArea(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 } 
 
-// eventlistener for the x and y mouse position correction
 
+function setMouseCanvas(axis, size){
+    // (getMousePos(canvas, event).x) > canvas.width ? canvas.width : (getMousePos(canvas, event).x) < 0 ? 0 : getMousePos(canvas, event).x;
+
+    if(axis > size){
+        return size;
+    }
+    if(axis < 0){
+        return 0;
+    }
+    return axis;
+}
+
+
+
+
+
+// eventlistener for the x and y mouse position correction
 window.addEventListener('mousemove', function(event){
 
+    // if(canvas){
+    //     mouseX = (getMousePos(canvas, event).x) > canvas.width ? canvas.width : (getMousePos(canvas, event).x) < 0 ? 0 : getMousePos(canvas, event).x;
+    //     mouseY = (getMousePos(canvas, event).y) > canvas.height? canvas.height : (getMousePos(canvas, event).y) < 0 ? 0 : getMousePos(canvas, event).y;
+    // }
     if(canvas){
-        mouseX = (getMousePos(canvas, event).x) > canvas.width ? canvas.width : (getMousePos(canvas, event).x) < 0 ? 0 : getMousePos(canvas, event).x;
-        mouseY = (getMousePos(canvas, event).y) > canvas.height? canvas.height : (getMousePos(canvas, event).y) < 0 ? 0 : getMousePos(canvas, event).y;
+        mouseX = setMouseCanvas(getMousePos(canvas, event).x, canvas.width)
+        mouseY = setMouseCanvas(getMousePos(canvas, event).y, canvas.height)
     }
+
 })
 
+
+
+// function that plays sound when laser beam is shot
+
 window.addEventListener('click', function(event){
-    if(canvas && gameStatus === true){
+    if(canvas && gameStatus){
         beamArr.push(new Beam(mouseX, mouseY, 10));
         ShootingSound()
     }
