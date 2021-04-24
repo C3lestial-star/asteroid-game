@@ -284,7 +284,7 @@ function noLivesLeft(){
 
 function winner(){
 
-    if(score > 200){
+    if(score > 10000){
         stopAnimation();
         setTimeout(() => {
             clearArea();
