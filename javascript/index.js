@@ -64,6 +64,7 @@ let gameStatus = null;
 
 restartBtn.addEventListener('click', function(e){
 
+    winSoundEffect.pause();
     console.log('restart')
     stopAnimation();
     clearArea();
@@ -283,7 +284,7 @@ function noLivesLeft(){
 
 function winner(){
 
-    if(score > 10000){
+    if(score > 200){
         stopAnimation();
         setTimeout(() => {
             clearArea();
