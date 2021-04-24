@@ -1,4 +1,4 @@
-let canvas = null;
+canvas = document.getElementById('canvas');
 const intro = document.getElementById('intro');
 let ctx = null;
 const startButton = document.getElementById('start');
@@ -21,7 +21,7 @@ startButton.addEventListener('click', function(){
 
     canvasCursor.style.cursor = 'none';
     mainthemeSound();
-    InitialStars()
+    InitialStars();
     gameStatus = true;
 
 })
@@ -38,11 +38,19 @@ const beamImage = new Image();
 beamImage.src = 'img/beams(5).png';
 const asteroid = new Image();
 asteroid.src = 'img/asteroid.png';
+const mainSound = new Audio()
+mainSound.src = './sounds/space.mp3'
+const gameOverSound = new Audio()
+gameOverSound.src = './sounds/gameover.mp3'
+const winSoundEffect = new Audio()
+winSoundEffect.src = './sounds/winner.mp3'
+winSoundEffect.loop = true;
+
 
 let lives = 5;
 let collision = false;
 const explosionSound = null;
-const mainSound = null;
+
 let stopId = null;
 let minInterval = 30;
 let maxInterval = 50;
@@ -51,20 +59,47 @@ let score = 0;
 let gameStatus = null;
 
 
+
+// function that resets the game
+
+restartBtn.addEventListener('click', function(e){
+
+    console.log('restart')
+    stopAnimation();
+    clearArea();
+    lives = 5;
+    startAnimation();
+    mainSound.play();
+    astroidsArr =[];
+    beamArr = [];
+    score = 0;
+    minInterval = 30;
+    maxInterval = 50;
+    gameStatus = true;
+    pauseBtn.innerHTML = 'Pause';
+
+})
+
+
+
 // function that enables the game to be paused
 
 pauseBtn.addEventListener('click', function(e){
+
+
 
     if(gameStatus){
         if(pauseBtn.innerHTML === 'Pause'){
             pauseBtn.innerHTML = 'Start';
             stopAnimation();
             console.log('Pause');
+            mainSound.pause();
         }
         else if(pauseBtn.innerHTML === 'Start'){
             pauseBtn.innerHTML = 'Pause';
             startAnimation();
             console.log('Start');
+            mainSound.play();
         }
     }
 })
@@ -81,6 +116,8 @@ function WinGame(){
     ctx.textStyle = 'center';    
     ctx.fillText("Well done", (window.innerWidth /3.9 ), (window.innerHeight /2.5));
     ctx.fillText("You Win!", (window.innerWidth /3.7 ), (window.innerHeight /2));
+    mainSound.pause();
+    winSoundEffect.play();
 
     gameStatus = false;
     window.addEventListener('resize', function(){
@@ -102,6 +139,12 @@ function gameOver(){
     ctx.textStyle = 'center';    
     ctx.fillText("Game Over", (window.innerWidth /4 ), (window.innerHeight /2.5));
     ctx.fillText("You Lose!", (window.innerWidth /3.7 ), (window.innerHeight /2));
+    mainSound.pause();
+
+
+    setTimeout(() =>{
+        gameOverSound.play();
+    },1500);
 
     gameStatus = false;
     window.addEventListener('resize', function(){
@@ -171,8 +214,6 @@ function stopAnimation(){
 // main sound 
 
 function mainthemeSound(){
-    const mainSound = new Audio()
-    mainSound.src = './sounds/space.mp3'
     mainSound.play();
     mainSound.loop = true;  
     mainSound.volume = 0.3;
@@ -280,6 +321,10 @@ window.addEventListener('resize', function(){
     if(canvas){
         canvas.width = window.innerWidth * 0.8;
         canvas.height = window.innerHeight * 0.8;
+
+        starsArr = [];
+        InitialStars();
+
     }
 })
 
@@ -307,13 +352,12 @@ function randomIntFromInterval(min, max) { // min and max included
 
 function generateAsteroids(){
     
-    let radius = randomIntFromInterval(20, 35)
-    let x = canvas.width - radius
-    let y = randomIntFromInterval(radius, (canvas.height - radius))
-    let velocityX = randomIntFromInterval(1,6)
-    let velocityY = randomIntFromInterval(-2,2)    
-    astroidsArr.push(new Astroids(x, y, radius, velocityX, velocityY))
-
+    let radius = randomIntFromInterval(20, 35);
+    let x = canvas.width - radius;
+    let y = randomIntFromInterval(radius, (canvas.height - radius));
+    let velocityX = randomIntFromInterval(1,6);
+    let velocityY = randomIntFromInterval(-2,2);
+    astroidsArr.push(new Astroids(x, y, radius, velocityX, velocityY));
 }
 
 // function that uses the stars class to generate star and pushes it into an array
@@ -396,7 +440,7 @@ window.addEventListener('mousemove', function(event){
 
 // function that plays sound when laser beam is shot
 
-window.addEventListener('click', function(event){
+canvas.addEventListener('click', function(event){
     if(canvas && gameStatus){
         beamArr.push(new Beam(mouseX, mouseY, 10));
         ShootingSound()
